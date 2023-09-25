@@ -14,7 +14,7 @@ This is a development board designed around ESP32-WROOM-32 32-bit MCU Module, th
 - Photoresistor GT36516
 - External JST 4p Female for GPIOs, Temperature and Humidity sensors
 
-This board is inexpensive considering the number of integrated features and its good build quality. Many project will work right out-the-box with relative fast startup speed. However, this design appears to be produced by multiple vendors (or copied) and the documentation for this board is either difficult to find or fairly incomplete. 
+This board is inexpensive considering the number of integrated features with good build quality. Many projects can work out-the-box with relative fast start-up speed. However, this design appears to be produced (and copied) by multiple vendors and the documentation for this board is either difficult to find or fairly incomplete. 
 
 The objective of this project is to provide a good starting point for developpers to create. 
 
@@ -25,4 +25,3 @@ This workspace is using the excellent plugin for VSCode  [Platformio](https://pl
 ## Installation
 
 Clone to repository and upload to the board.
-
