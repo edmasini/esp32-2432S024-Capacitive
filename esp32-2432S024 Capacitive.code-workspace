@@ -1,0 +1,26 @@
+{
+	"folders": [
+		{
+			"name": "esp32-2432S024 Capacitive",
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"lv_demo_stress.h": "c",
+			"array": "cpp",
+			"*.tcc": "cpp",
+			"deque": "cpp",
+			"list": "cpp",
+			"string": "cpp",
+			"unordered_map": "cpp",
+			"unordered_set": "cpp",
+			"vector": "cpp",
+			"string_view": "cpp",
+			"memory": "cpp",
+			"random": "cpp",
+			"initializer_list": "cpp",
+			"regex": "cpp"
+		}
+	}
+}

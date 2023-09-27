@@ -64,22 +64,21 @@ bool CST820::getTouch(uint16_t *x, uint16_t *y, uint8_t *gesture)
     uint16_t _x = ((data[0] & 0x0f) << 8) | data[1];
     uint16_t _y = ((data[2] & 0xff) << 8) | data[3];
 
+    if (_rotation == 1 || _rotation == 3)
+    {
+        uint16_t _tx = _x;
+        _x = _y;
+        _y = _tx;
+    }
+
+    if (_rotation == 1 || _rotation == 2) 
+    {
+        _y = _height - _y;
+    }
+
     if (_rotation == 2 || _rotation == 3) 
     {
-        _x = _height - _x;
-        _y = _width - _y;
-    }
-    if (_rotation == 1 || _rotation == 3) 
-    {
-        _x = _height - _x;
-        _y = _width - _y;
-        *x = _y;
-        *y = _x;
-    }
-    else 
-    {
-        *x = _x;
-        *y = _y;
+         _x = _width - _x;
     }
 
     return FingerIndex;

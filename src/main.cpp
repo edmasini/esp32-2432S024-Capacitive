@@ -239,5 +239,7 @@ void setup()
 void loop()
 {
   lv_timer_handler(); /* Display Routine */
-  delay(5);
+  // delay(5);
+  esp_sleep_enable_timer_wakeup(10000); // Sleep timer for 10ms
+  esp_light_sleep_start(); // Start sleep
 }
