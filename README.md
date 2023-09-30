@@ -16,14 +16,26 @@ This is a development board designed around ESP32-WROOM-32 32-bit MCU Module, th
 - Temperature and Humidity sensors
 - USB type-c connector with serial based on CH370
 
-This board is inexpensive if considering the number of integrated features in all-round quality build. Many projects can work out-the-box with relative fast leadtime. However, this design appears to be produced (and copied) by multiple vendors and the documentation for this board is either difficult to find and fairly incomplete. 
+This is an inexpensive board if considering the number of integrated features in an all-round quality build. Many projects can work out-the-box with relative fast leadtime. However, this design appears to be produced (and copied) by multiple vendors and the documentation for this board is either difficult to find or fairly incomplete. 
 
-The objective of this project is to provide a good starting point for developpers to create touch screen applications.
+The original capacitive touch driver provided by the "official" documentation, referred by both CST820.x files, is overly simplified and incomplete, and does not cover screen all rotation configurations. The patched driver provided here, is allowing all 4 possible screen rotations.
+
+The objective of this project is to provide a good starting point for developpers to create touch screen applications using this development board.
 
 ## Requirements
 
-This workspace is using the excellent plugin for VSCode  [Platformio](https://platformio.org). It doesn't require separed library configurations and file management. 
+This workspace is using the excellent plugin for VSCode [Platformio](https://platformio.org). It does provide streamlined and plug-and-play library configuration and file management. The Arduino IDE can also be used, but it requires manual configuration.
 
 ## Installation
 
-Clone the repository and upload to the board using a usb type-c cable. 
+Clone the repository
+
+Set the screen rotation ``main.ccp``:
+```
+#define WIDTH 320 
+#define HEIGHT 240
+#defice ROTATION 1
+```
+In this example, the screen will display in landscape mode.
+
+Upload to the board using a usb type-c cable. 

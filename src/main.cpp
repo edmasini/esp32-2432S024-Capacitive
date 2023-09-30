@@ -11,9 +11,16 @@ Capacitive touch
 #include "lv_conf.h"
 
 // Screen Dimensions
-#define WIDTH 320
-#define HEIGHT 240
-#define ROTATION 3
+#define WIDTH 320   // Set screen width
+#define HEIGHT 240  // Set screen height
+
+/* Set screen rotation: 
+0 - Portrait
+1 - Landscape
+2 - Inverted portrait
+3 - Inverted landscape
+*/ 
+#define ROTATION 1
 
 // Touch PINS
 #define I2C_SDA 33
@@ -239,7 +246,5 @@ void setup()
 void loop()
 {
   lv_timer_handler(); /* Display Routine */
-  // delay(5);
-  esp_sleep_enable_timer_wakeup(10000); // Sleep timer for 10ms
-  esp_light_sleep_start(); // Start sleep
+  delay(5);
 }
