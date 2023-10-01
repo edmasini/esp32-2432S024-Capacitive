@@ -2,7 +2,7 @@
 
 ![ESP32-2432S024-Board](img/board_front.jpg "ESP32-2432S024 Board front" ) 
 
-This is a development board designed around ESP32-WROOM-32 32-bit MCU Module, that includes:
+ESP32-2432S024 is a development board designed around ESP32-WROOM-32 32-bit MCU Module, that includes:
 
 - ESP32-WROOM-32 MCU
 - 320x240 pixels TFT integration screen
@@ -18,9 +18,9 @@ This is a development board designed around ESP32-WROOM-32 32-bit MCU Module, th
 
 This is an inexpensive board if considering the number of integrated features in an all-round quality build. Many projects can work out-the-box with relative fast leadtime. However, this design appears to be produced (and copied) by multiple vendors and the documentation for this board is either difficult to find or fairly incomplete. 
 
-The original capacitive touch driver provided by the "official" documentation, referred by both CST820.x files, is overly simplified and incomplete, and does not cover screen all rotation configurations. The patched driver provided here, is allowing all 4 possible screen rotations.
-
 The objective of this project is to provide a good starting point for developpers to create touch screen applications using this development board.
+
+The original capacitive touch driver provided by the "official" documentation, referred by both CST820.x files, is overly simplified and incomplete, and does not cover screen all rotation configurations. The patched driver provided here, is allowing all 4 possible screen rotations.
 
 ## Requirements
 
