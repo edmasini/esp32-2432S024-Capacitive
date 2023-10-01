@@ -5,14 +5,14 @@
 ESP32-2432S024 is a development board designed around ESP32-WROOM-32 32-bit MCU Module, that includes:
 
 - ESP32-WROOM-32 MCU
-- 320x240 pixels TFT integration screen
+- 320x240 pixels TFT screen
 - Capacitive touch based on CST820 chipset
 - TF Card slot
 - Battery connector (JST 1.24 2p Male) with IP5603 Power Bank System-On-Chip
 - One RGB LED
 - Speaker output based on SC8002B
 - Photoresistor GT36516
-- External JST 4p Female for GPIOs,
+- External JST 4p Female for GPIOs
 - Temperature and Humidity sensors
 - USB type-c connector with serial based on CH370
 
