@@ -29,40 +29,69 @@ uint8_t calculate_checksum(uint8_t *data, size_t length) {
   return checksum;
 }
 
-// Функция для обработки касания с использованием LVGL
-void touchpad_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data)
-{
-    uint16_t x, y;
-    bool touched = tft.getTouch(&x, &y);
+// Создание интерфейса
+void create_ui() {
+  lv_obj_t *cont = lv_obj_create(lv_scr_act());
+  lv_obj_set_size(cont, WIDTH, HEIGHT);
+  lv_obj_set_style_pad_all(cont, 10, 0);
 
-    if (!touched) {
-        data->state = LV_INDEV_STATE_REL;
-    } else {
-        data->state = LV_INDEV_STATE_PR;
-        data->point.x = x;
-        data->point.y = y;
-        Serial.printf("Touch detected at x=%d, y=%d\n", x, y);
-    }
+  label_request = lv_label_create(cont);
+  lv_label_set_text(label_request, "Request:");
+  lv_obj_align(label_request, LV_ALIGN_TOP_MID, 0, 20);
+
+  label_response = lv_label_create(cont);
+  lv_label_set_text(label_response, "Response:");
+  lv_obj_align(label_response, LV_ALIGN_CENTER, 0, 20);
+
+  progress_bar = lv_bar_create(cont);
+  lv_obj_set_size(progress_bar, WIDTH - 40, 10);
+  lv_bar_set_range(progress_bar, 0, 255);
+  lv_obj_align(progress_bar, LV_ALIGN_BOTTOM_MID, 0, -40);
 }
 
-// Функция для обновления отображаемых данных
-void update_display_data(const char* request_text, const char* response_text, uint8_t checksum) {
-  lv_label_set_text(label_request, request_text);
-  lv_label_set_text(label_response, response_text);
+// Обновление интерфейса
+void update_ui(const char *request, const char *response, uint8_t checksum) {
+  lv_label_set_text(label_request, request);
+  lv_label_set_text(label_response, response);
   lv_bar_set_value(progress_bar, checksum, LV_ANIM_ON);
+}
+
+// Отправка запроса
+void send_request(uint8_t *request, size_t length) {
+  Serial2.write(request, length);
+  Serial.print("Request sent: ");
+  for (size_t i = 0; i < length; i++) {
+    Serial.printf("%02X ", request[i]);
+  }
+  Serial.println();
+}
+
+// Получение ответа
+bool receive_response(uint8_t *response, size_t length, uint32_t timeout) {
+  size_t received = 0;
+  unsigned long start_time = millis();
+
+  while (millis() - start_time < timeout) {
+    while (Serial2.available() > 0 && received < length) {
+      response[received++] = Serial2.read();
+    }
+    if (received >= length) return true;
+    lv_task_handler();  // Обновление интерфейса
+    delay(10);
+  }
+  return false;
 }
 
 void setup() {
   Serial.begin(115200);
-  Serial2.begin(PRESSURE_BAUD, SERIAL_8O1 | UART_PARITY_ODD, PRESSURE_RX, PRESSURE_TX);
+  Serial2.begin(PRESSURE_BAUD, SERIAL_8N1, PRESSURE_RX, PRESSURE_TX);
 
   tft.begin();
   tft.setRotation(ROTATION);
   tft.fillScreen(TFT_BLACK);
-  
-  // Калибровка тачскрина
-  uint16_t calData[5] = { 355, 3650, 325, 3600, 7 };  // Данные из примера на GitHub
-  tft.setTouch(calData);  // Устанавливаем калибровку
+
+  uint16_t calData[5] = {355, 3650, 325, 3600, 7};
+  tft.setTouch(calData);
 
   pinMode(BACKLIGHT, OUTPUT);
   digitalWrite(BACKLIGHT, HIGH);
@@ -74,6 +103,8 @@ void setup() {
   lv_disp_draw_buf_init(&draw_buf, buf, NULL, WIDTH * 10);
 
   static lv_disp_drv_t disp_drv;
+  lv_disp_drv_init(&disp_drv);
+  disp_drv.hor_res = WIDTH;
   lv_disp_drv_init(&disp_drv);
   disp_drv.hor_res = WIDTH;
   disp_drv.ver_res = HEIGHT;
@@ -93,81 +124,43 @@ void setup() {
   disp_drv.draw_buf = &draw_buf;
   lv_disp_drv_register(&disp_drv);
 
-  // Настройка драйвера для тачскрина в LVGL
-  static lv_indev_drv_t indev_drv;
-  lv_indev_drv_init(&indev_drv);
-  indev_drv.type = LV_INDEV_TYPE_POINTER;
-  indev_drv.read_cb = touchpad_read;
-  lv_indev_drv_register(&indev_drv);
-
-  // Основной экран (создание интерфейса для запросов)
-  lv_obj_t *cont = lv_obj_create(lv_scr_act());
-  lv_obj_set_size(cont, WIDTH, HEIGHT);
-  lv_obj_set_style_pad_all(cont, 10, 0);
-
-  // Подключение шрифта
-  lv_style_t style;
-  lv_style_init(&style);
-  lv_style_set_text_font(&style, &lv_font_montserrat_14);
-
-  // Создание контейнеров для запроса и ответа
-  label_request = lv_label_create(cont);
-  lv_label_set_text(label_request, "Request:");
-  lv_obj_add_style(label_request, &style, 0);
-  lv_obj_align(label_request, LV_ALIGN_TOP_MID, 0, 20);
-
-  label_response = lv_label_create(cont);
-  lv_label_set_text(label_response, "Response:");
-  lv_obj_add_style(label_response, &style, 0);
-  lv_obj_align(label_response, LV_ALIGN_CENTER, 0, 20);
-
-  // Создание круговой диаграммы (progress bar) для контрольной суммы
-  progress_bar = lv_bar_create(cont);
-  lv_obj_set_size(progress_bar, WIDTH - 40, 20);
-  lv_bar_set_range(progress_bar, 0, 255);
-  lv_obj_align(progress_bar, LV_ALIGN_BOTTOM_MID, 0, -20);
-
-  delay(1000);
+  create_ui();
 }
 
 void loop() {
-  uint8_t request[5] = {0x02, 0x02, 0x01, 0x00, calculate_checksum(request, 4)};
-  uint8_t response[8];
-  float pressure_value;
+  uint8_t request[5] = {0x02, 0x02, 0x01, 0x00, 0x01};
+  uint8_t response[10];
 
-  Serial2.write(request, sizeof(request));
-  Serial.print("Request sent: ");
-  for (int i = 0; i < 5; i++) {
-    Serial.printf("%02X ", request[i]);
-  }
-  Serial.println();
+  send_request(request, sizeof(request));
 
-  delay(40);  // Ожидание ответа
-
-  if (Serial2.available() >= 6) {
-    Serial2.readBytes(response, 6);
-    uint8_t calculated_checksum = calculate_checksum(response, 5);
-
-    if (response[0] == 0x06 && calculated_checksum == response[5]) {
-      memcpy(&pressure_value, &response[1], sizeof(float));
-      char response_text[50];
-      sprintf(response_text, "Pressure: %.2f kPa", pressure_value);
-      char request_text[50];
-      sprintf(request_text, "Request: %02X %02X %02X %02X %02X", request[0], request[1], request[2], request[3], request[4]);
-
-      update_display_data(request_text, response_text, calculated_checksum);
+  if (receive_response(response, sizeof(response), 10000)) {
+    if (calculate_checksum(response, 9) == response[9]) {
       Serial.print("Response received: ");
-      for (int i = 0; i < 6; i++) {
+      for (size_t i = 0; i < 10; i++) {
         Serial.printf("%02X ", response[i]);
       }
-      Serial.printf("Checksum: %02X\n", calculated_checksum);
+      Serial.println();
+
+      char response_text[50];
+      snprintf(response_text, sizeof(response_text),
+               "Response: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X",
+               response[0], response[1], response[2], response[3], response[4],
+               response[5], response[6], response[7], response[8], response[9]);
+
+      char request_text[50];
+      snprintf(request_text, sizeof(request_text),
+               "Request: %02X %02X %02X %02X %02X",
+               request[0], request[1], request[2], request[3], request[4]);
+
+      update_ui(request_text, response_text, response[9]);
     } else {
-      update_display_data("Request sent", "Checksum error", 0);
+      Serial.println("Checksum error");
+      update_ui("Request sent", "Checksum error", 0);
     }
   } else {
-    update_display_data("Request sent", "No response from module", 0);
+    Serial.println("No response received within 10 seconds.");
+    update_ui("Request sent", "No response", 0);
   }
 
-  lv_task_handler(); // LVGL обработка
-  delay(5);
+  lv_task_handler();  // Обработка задач LVGL
 }
