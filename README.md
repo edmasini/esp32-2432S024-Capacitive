@@ -1,8 +1,8 @@
 # ESP32-2432S024  Capacitive Touch LVGL WIFI & Bluetooth Development Board
 
-![ESP32-2432S024-Board](img/board_front.jpg "ESP32-2432S024 Board front" ) 
+![ESP32-2432S024C-Board](img/board_front.jpg "ESP32-2432S024 Board front" ) 
 
-ESP32-2432S024 is a development board designed around ESP32-WROOM-32 32-bit MCU Module, that includes:
+ESP32-2432S024C is a development board designed around ESP32-WROOM-32 32-bit MCU Module, that includes:
 
 - ESP32-WROOM-32 MCU
 - 320x240 pixels TFT screen
@@ -30,12 +30,24 @@ This workspace is using the excellent plugin for VSCode [Platformio](https://pla
 
 Clone the repository
 
-Set the screen rotation ``main.ccp``:
+Set the screen size and rotation ``platformio.ini``:
 ```
-#define WIDTH 320 
-#define HEIGHT 240
-#defice ROTATION 1
+  -D SCREEN_WIDTH=320
+  -D SCREEN_HEIGHT=240
+  -D SCREEN_ROTATE=3 ; 0: Portrait, 1: Landscape, 2: Inversed Portrait, 3: Inversed Landscape
 ```
-In this example, the screen will display in landscape mode.
+
+In this example, the screen will display 320x240px in landscape mode.
+
+Remove the Demo Widgets if your use your own code
+```
+-D LV_USE_DEMO_WIDGETS=1
+```
 
 Upload to the board using a usb type-c cable. 
+
+## Simulator
+
+Included in this package, a simulator to execute the LVGL interface in local environment, without the need to upload to the board. 
+
+Follow the requirements and installation process on [Run LittlevGL via PlatformIO](https://github.com/lvgl/lv_platformio).

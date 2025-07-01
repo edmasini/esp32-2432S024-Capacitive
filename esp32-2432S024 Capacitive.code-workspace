@@ -7,6 +7,7 @@
 	],
 	"settings": {
 		"files.associations": {
+			"*.erb": "html",
 			"lv_demo_stress.h": "c",
 			"array": "cpp",
 			"*.tcc": "cpp",
@@ -20,7 +21,8 @@
 			"memory": "cpp",
 			"random": "cpp",
 			"initializer_list": "cpp",
-			"regex": "cpp"
+			"regex": "cpp",
+			"print": "cpp"
 		}
 	}
 }

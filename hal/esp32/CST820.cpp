@@ -61,6 +61,8 @@ bool CST820::getTouch(uint16_t *x, uint16_t *y, uint8_t *gesture)
 
     uint8_t data[4];
     i2c_read_continuous(0x03,data,4);
+    // *x = ((data[0] & 0x0f) << 8) | data[1];
+    // *y = ((data[2] & 0x0f) << 8) | data[3];
     uint16_t _x = ((data[0] & 0x0f) << 8) | data[1];
     uint16_t _y = ((data[2] & 0xff) << 8) | data[3];
 
@@ -71,15 +73,19 @@ bool CST820::getTouch(uint16_t *x, uint16_t *y, uint8_t *gesture)
         _y = _tx;
     }
 
-    if (_rotation == 1 || _rotation == 2) 
+    if (_rotation == 0) 
     {
+        _x = _width - _x;
         _y = _height - _y;
     }
 
-    if (_rotation == 2 || _rotation == 3) 
+    if (_rotation == 3) 
     {
-         _x = _width - _x;
+         _y = _height - _y;
     }
+
+    *x = _x;
+    *y = _y;
 
     return FingerIndex;
 }
